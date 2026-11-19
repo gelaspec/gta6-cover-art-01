@@ -1,12 +1,155 @@
-html, body { margin: 0; height: 100%; background: #f2f0f4; color: #1d1b22; font: 15px/1.4 system-ui, sans-serif; }
-.app { display: flex; gap: 32px; align-items: center; justify-content: center; height: 100%; padding: 24px; box-sizing: border-box; }
-.controls { display: flex; flex-direction: column; gap: 14px; width: 280px; }
-.controls h1 { margin: 0; font-size: 28px; }
-.controls p { margin: 0; color: #5c5866; }
-label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
-input[type=text] { font: inherit; padding: 8px; border: 1px solid #c9c4d1; border-radius: 6px; }
-button { font: inherit; font-weight: 700; padding: 10px; border: 0; border-radius: 6px; background: #1d1b22; color: #fff; cursor: pointer; }
-canvas { width: min(70vh, 60vw); height: min(70vh, 60vw); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); }
+/* Vice Coast Cover Studio — dark editor chrome around a bright poster. */
+@font-face { font-family: 'Anton'; src: url('./fonts/Anton-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Pacifico'; src: url('./fonts/Pacifico-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Bebas Neue'; src: url('./fonts/BebasNeue-Regular.ttf') format('truetype'); font-weight: 400; }
+
+:root {
+  --ink: #f4f0ff;
+  --muted: #a99fc4;
+  --panel: #171226;
+  --panel-2: #1f1836;
+  --line: #322a52;
+  --pink: #ff2975;
+  --gold: #ffd319;
+  --cyan: #7df9ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #0b0614;
+  color: var(--ink);
+  font: 15px/1.45 system-ui, -apple-system, sans-serif;
+}
+
+.app {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 22px;
+}
+
+.controls {
+  width: 330px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-family: 'Anton', sans-serif;
+  font-size: 40px;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, var(--gold), var(--pink), #8c1eff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tagline { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+.group {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group h2 {
+  margin: 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+}
+
+.hint { margin: 0; color: var(--muted); font-size: 12.5px; }
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+label.check { flex-direction: row; align-items: center; gap: 6px; font-weight: 500; }
+
+input[type=text] {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+input[type=file] { font: inherit; font-size: 13px; color: var(--muted); }
+input[type=range] { width: 100%; accent-color: var(--pink); }
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row > * { flex: 1 1 auto; }
+
+.picker { display: flex; flex-wrap: wrap; gap: 8px; }
+
+button {
+  font: inherit;
+  font-weight: 700;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+button:hover { border-color: var(--pink); }
+button.active { background: var(--pink); border-color: var(--pink); color: #fff; }
+button:disabled { opacity: 0.4; cursor: default; }
+
+button.primary {
+  background: linear-gradient(90deg, var(--gold), var(--pink));
+  border: 0;
+  color: #14081f;
+  font-size: 16px;
+}
+
+.export-col { display: flex; flex-direction: column; gap: 8px; }
+
+#status { margin: 0; color: var(--cyan); font-size: 13px; min-height: 1.2em; }
+
+.preview { flex: 1; min-width: 0; position: sticky; top: 22px; }
+
+#cover {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
+  cursor: grab;
+  touch-action: none;
+}
+
+#cover:active { cursor: grabbing; }
+
+.preview-note { color: var(--muted); font-size: 13px; text-align: center; }
+
+/* Screenshot scenes: the cover fills the whole frame, controls hidden. */
 body.shot-cover .controls { display: none; }
-body.shot-cover .app { padding: 0; }
-body.shot-cover canvas { width: 100vw; height: 100vh; box-shadow: none; }
+body.shot-cover .app { padding: 0; gap: 0; }
+body.shot-cover .preview { position: static; }
+body.shot-cover #cover { width: 100vw; height: 100vh; object-fit: contain; border-radius: 0; box-shadow: none; }
+body.shot-cover .preview-note { display: none; }
+
+@media (max-width: 900px) {
+  .app { flex-direction: column; }
+  .controls { width: 100%; }
+  .preview { position: static; width: 100%; }
+}
