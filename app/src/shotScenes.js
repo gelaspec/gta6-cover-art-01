@@ -16,16 +16,16 @@ const SCENES = {
       title: 'VICE COAST', subtitle: 'chase the sunset',
       money: '$38,420', heat: 4, rep: 62,
       grain: true, vignette: true, frame: false,
-      // Same photo in two side panels, cropped to different regions so the
-      // cover does not repeat one framing.
+      // Hero is the boulevard shot (red car, palms, sunset) — the most
+      // poster-like sample; the pier fills the side panels in varied crops.
       panels: [
-        { photo: 0, zoom: 1, panX: 0, panY: 0, flip: false },
-        { photo: 1, zoom: 1.1, panX: 0.2, panY: 0, flip: false },
-        { photo: 0, zoom: 1.25, panX: 0.7, panY: -0.2, flip: false },
-        { photo: 2, zoom: 1.2, panX: -0.6, panY: 0.1, flip: false },
+        { photo: 0, zoom: 1, panX: 0.1, panY: 0, flip: false },
+        { photo: 1, zoom: 1.25, panX: 0.7, panY: -0.2, flip: false },
+        { photo: 0, zoom: 1.3, panX: -0.5, panY: 0.1, flip: false },
+        { photo: 1, zoom: 1.2, panX: -0.6, panY: 0.1, flip: false },
       ],
     },
-    photos: ['pier', 'boulevard', 'pier'],
+    photos: ['boulevard', 'pier', 'boulevard'],
   },
   editor: {
     coverOnly: false,

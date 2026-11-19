@@ -53,6 +53,81 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+function drawHelicopter(ctx, x, y, s) {
+  // An original helicopter silhouette with a searchlight beam, drawn as
+  // flat vector shapes — the chase read of the TOP20 pattern without
+  // copying any game's artwork. It flies over the hero panel's sky.
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(s, s);
+  // Searchlight beam sweeping down to the street.
+  ctx.fillStyle = 'rgba(255, 240, 180, 0.10)';
+  ctx.beginPath();
+  ctx.moveTo(-6, 14);
+  ctx.lineTo(58, 150);
+  ctx.lineTo(-70, 150);
+  ctx.closePath();
+  ctx.fill();
+  // Main rotor + mast.
+  ctx.strokeStyle = 'rgba(11, 6, 20, 0.9)';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(-78, -26);
+  ctx.lineTo(78, -30);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, -26);
+  ctx.lineTo(0, -12);
+  ctx.stroke();
+  // Tail boom + tail rotor.
+  ctx.fillStyle = 'rgba(11, 6, 20, 0.9)';
+  ctx.beginPath();
+  ctx.moveTo(28, -6);
+  ctx.lineTo(96, -14);
+  ctx.lineTo(96, -4);
+  ctx.lineTo(28, 4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(11, 6, 20, 0.9)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(96, -24);
+  ctx.lineTo(96, 6);
+  ctx.stroke();
+  // Body: rounded nose to the left, cabin window cut in lighter tone.
+  ctx.beginPath();
+  ctx.moveTo(-58, -8);
+  ctx.quadraticCurveTo(-58, -16, -44, -16);
+  ctx.lineTo(20, -16);
+  ctx.quadraticCurveTo(34, -16, 34, -4);
+  ctx.lineTo(34, 6);
+  ctx.quadraticCurveTo(34, 12, 24, 12);
+  ctx.lineTo(-44, 12);
+  ctx.quadraticCurveTo(-58, 12, -58, -8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = 'rgba(125, 249, 255, 0.75)';
+  ctx.beginPath();
+  ctx.moveTo(-46, -12);
+  ctx.lineTo(-18, -12);
+  ctx.lineTo(-18, 0);
+  ctx.lineTo(-46, 0);
+  ctx.closePath();
+  ctx.fill();
+  // Skids.
+  ctx.strokeStyle = 'rgba(11, 6, 20, 0.9)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(-48, 22);
+  ctx.lineTo(28, 22);
+  ctx.moveTo(-40, 12);
+  ctx.lineTo(-44, 22);
+  ctx.moveTo(18, 12);
+  ctx.lineTo(22, 22);
+  ctx.stroke();
+  ctx.restore();
+}
+
 function drawPanel(ctx, panel, img, framing, grade, frameW) {
   ctx.save();
   ctx.beginPath();
@@ -263,6 +338,14 @@ export function renderCover(canvas, state, photos) {
     const img = framing.photo >= 0 ? photos[framing.photo] || null : null;
     drawPanel(ctx, panel, img, framing, grade, frameW);
   });
+
+  // Helicopter over the hero panel, below the top HUD band (mission panel
+  // and dialog strip) and over the brighter sky, so the dark silhouette
+  // reads against the sunset instead of a busy foreground.
+  const hero = panels.find((p) => p.kind === 'hero');
+  if (hero) {
+    drawHelicopter(ctx, hero.x + hero.w * 0.34, hero.y + hero.h * 0.24, u * 1.6);
+  }
 
   const pad = 42 * u;
   const hud = (txt, x, y, size, colour = '#ffffff', align = 'left') => {
