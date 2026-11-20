@@ -1,10 +1,13 @@
+// v2 rebuild: hand-in program rewritten in the typed session.
 // Vice Coast Cover Studio — the entry program for gta6-cover-art-01.
+//
 // It hands the app in: copies this repo's app/ and screenshots/ into the
-// output directory and writes dossier.json there, using the vendored make.fun
-// library to build the dossier. No network, no build step, Node 22 stdlib.
+// output directory and writes dossier.json there, using the vendored
+// make.fun library to build the dossier. No network, no build step —
+// Node 22 standard library only.
 //
 // Run it outside the grader with MAKEFUN_OUTPUT_DIR standing in for /output:
-//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+//   MAKEFUN_OUTPUT_DIR=out node main.ts
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,7 +19,8 @@ const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
 function handIn() {
   // Fail loudly instead of handing in a half-empty output directory.
-  if (!existsSync(join(repoRoot, 'app', 'index.html'))) {
+  const indexPath = join(repoRoot, 'app', 'index.html');
+  if (!existsSync(indexPath)) {
     throw new Error('app/index.html is missing — nothing to hand in');
   }
   mkdirSync(outputDir, { recursive: true });
@@ -25,9 +29,7 @@ function handIn() {
   const shotsDir = join(outputDir, 'screenshots');
   mkdirSync(shotsDir, { recursive: true });
   const repoShots = join(repoRoot, 'screenshots');
-  if (existsSync(repoShots)) {
-    cpSync(repoShots, shotsDir, { recursive: true });
-  }
+  if (existsSync(repoShots)) cpSync(repoShots, shotsDir, { recursive: true });
 
   // The scorer's caps: text and screenshot budgets, and the app size caps.
   // An entry over any of them is refused, so the dossier is built with the

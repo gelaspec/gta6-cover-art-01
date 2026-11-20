@@ -1,43 +1,39 @@
-// Undo / redo for the whole cover state: one snapshot per committed change
-// (layout, grade, caption, panel framing, toggles). Snapshots are plain JSON
-// so they are cheap to copy and compare; the editor only pushes when the
-// serialised state actually changed.
+// v2: snapshot stack rewritten in this session; push dedupes identical states.
+// Undo and redo for the cover state.
+//
+// The whole state is plain JSON, so a snapshot is just a string. One push
+// per gesture: the editor records the state *before* the change, and the
+// caption typing debounce makes sure a whole typed word is one entry, not
+// one entry per keystroke. Nothing is pushed when the state did not change.
 
-// A bounded stack of past states plus the states undone (for redo).
 export function makeHistory(limit = 60) {
   return { past: [], future: [], limit };
 }
 
-function serialise(state) {
+function snapshot(state) {
   return JSON.stringify(state);
 }
 
-// Records the state BEFORE a change. Call it once per user gesture, not per
-// keystroke: the editor debounces caption typing before pushing.
 export function pushHistory(history, stateBefore) {
-  const snap = serialise(stateBefore);
-  if (history.past.length && history.past[history.past.length - 1] === snap) return history;
+  const snap = snapshot(stateBefore);
+  const last = history.past[history.past.length - 1];
+  if (last === snap) return history;
   history.past.push(snap);
-  if (history.past.length > history.limit) history.past.shift();
+  while (history.past.length > history.limit) history.past.shift();
   history.future.length = 0;
   return history;
 }
 
-// Steps one state back. Returns the restored state object, or null when
-// there is nothing to undo. The current state is saved for redo.
 export function undoCover(history, currentState) {
-  if (!history.past.length) return null;
-  history.future.push(serialise(currentState));
-  const snap = history.past.pop();
-  return JSON.parse(snap);
+  if (history.past.length === 0) return null;
+  history.future.push(snapshot(currentState));
+  return JSON.parse(history.past.pop());
 }
 
-// Steps one state forward. Returns the restored state, or null.
 export function redoCover(history, currentState) {
-  if (!history.future.length) return null;
-  history.past.push(serialise(currentState));
-  const snap = history.future.pop();
-  return JSON.parse(snap);
+  if (history.future.length === 0) return null;
+  history.past.push(snapshot(currentState));
+  return JSON.parse(history.future.pop());
 }
 
 export function canUndo(history) {

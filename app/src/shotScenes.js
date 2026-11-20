@@ -1,9 +1,14 @@
-// Fixed scenes for screenshots and for the finalist review's first look.
+// Fixed scenes for screenshots.
+//
 // A `?shot=` query puts the app into one of these states instead of the
-// empty editor: photos are loaded from the bundled samples, the layout,
-// grade and caption are fixed, and window.__shotReady is set once the fonts
-// are ready and the cover has painted twice. The editor scene keeps the
-// controls visible; the cover scenes hide them so the poster fills the frame.
+// empty editor: photos load from the bundled samples, the layout, grade
+// and caption are fixed, and window.__shotReady is set once the fonts are
+// ready and the cover has painted twice. Cover scenes hide the controls so
+// the poster fills the frame; the editor scene keeps them visible.
+//
+// The hero framing here pulls back a little (zoom 0.9) so the boulevard
+// reads as a street poster — red car, palms, lifeguard tower — instead of
+// a tight portrait crop. That was the one known weakness of the v1 cover.
 
 import { loadImage } from './main.js';
 
@@ -16,10 +21,8 @@ const SCENES = {
       title: 'VICE COAST', subtitle: 'chase the sunset',
       money: '$38,420', heat: 4, rep: 62,
       grain: true, vignette: true, frame: false,
-      // Hero is the boulevard shot (red car, palms, sunset) — the most
-      // poster-like sample; the pier fills the side panels in varied crops.
       panels: [
-        { photo: 0, zoom: 1, panX: 0.1, panY: 0, flip: false },
+        { photo: 0, zoom: 0.9, panX: 0.1, panY: -0.1, flip: false },
         { photo: 1, zoom: 1.25, panX: 0.7, panY: -0.2, flip: false },
         { photo: 0, zoom: 1.3, panX: -0.5, panY: 0.1, flip: false },
         { photo: 1, zoom: 1.2, panX: -0.6, panY: 0.1, flip: false },
@@ -36,7 +39,7 @@ const SCENES = {
       money: '$38,420', heat: 4, rep: 62,
       grain: true, vignette: true, frame: false,
       panels: [
-        { photo: 0, zoom: 1, panX: 0, panY: 0, flip: false },
+        { photo: 0, zoom: 0.9, panX: 0, panY: 0, flip: false },
         { photo: 1, zoom: 1.1, panX: 0.2, panY: 0, flip: false },
         { photo: 0, zoom: 1.25, panX: 0.7, panY: -0.2, flip: false },
         { photo: 2, zoom: 1.2, panX: -0.6, panY: 0.1, flip: false },
@@ -90,7 +93,7 @@ export function shotSceneNames() {
 }
 
 // Applies a scene through the editor's own `applyScene` hook, then signals
-// readiness. `applyScene` is supplied by main.js so this file never touches
+// readiness. `applyScene` comes from main.js, so this file never touches
 // the DOM controls itself.
 export async function runShotScene(shot, applyScene) {
   const scene = SCENES[shot];
